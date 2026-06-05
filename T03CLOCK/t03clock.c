@@ -4,6 +4,25 @@
 #define WND_CLASS_NAME "039"
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
+void DrawArrow( HDC hDC, INT xc, INT yc, INT l, DOUBLE s, INT h)
+{
+  POINT pts[4] = {{0, 0}, {-10, (INT)(l / 1.5)}, {0, l}, {10, (INT)(l / 1.5)}},
+            pts_res[sizeof(pts) / sizeof(pts[0])];
+  INT i;
+  DOUBLE a;
+
+  a = s / h * 2 * 3.14;
+
+  for (i = 0; i < sizeof(pts) / sizeof(pts[0]); i++)
+  {
+    pts_res[i].x = (int)(xc + pts[i].x * cos(a) + pts[i].y * sin(a));
+    pts_res[i].y = (int)(yc - pts[i].y * cos(a) + pts[i].x * sin(a));
+  }
+
+  Polygon(hDC, pts_res, 4);
+
+}
+
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, 
                     CHAR *CmdLine, INT ShowCmd )
 {
@@ -41,7 +60,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
   HDC hDC;
-  HPEN hPen, hOldPen;
   RECT rc;
   static BITMAP bm;
   static HBITMAP hBm;
@@ -63,23 +81,25 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 
     GetLocalTime(&st);
 
-    MoveToEx(hMemDC, W / 2 - W / 51, H / 2 + H / 27, NULL);
-    LineTo(hMemDC, (INT)(W / 2 - W / 51 + sin((st.wSecond + st.wMilliseconds / 1000.0) / 60.0 * 2 * 3.14) * W / 2.5), (INT)(H / 2 + H / 27 - cos((st.wSecond + st.wMilliseconds / 1000.0) / 60.0 * 2 * 3.14) * H / 2.5));
+    SelectObject(hMemDC, GetStockObject(DC_PEN));
+    SetDCPenColor(hMemDC, RGB(0, 0, 0));
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(255, 215, 0));
+    DrawArrow(hMemDC, W / 2 - W / 51, H / 2 + H / 27, (INT)(W / 2.5), st.wSecond + st.wMilliseconds / 1000.0, 60);
 
-    hPen = CreatePen(PS_SOLID, 5, RGB(0, 0, 0));
-    hOldPen = SelectObject(hMemDC, hPen);
-    MoveToEx(hMemDC, W / 2 - W / 51, H / 2 + H / 27, NULL);
-    LineTo(hMemDC, (INT)(W / 2 - W / 51 + sin((st.wMinute + st.wSecond / 60.0 + st.wMilliseconds / 60000.0) / 60.0 * 2 * 3.14) * W / 3.5), (INT)(H / 2 + H / 27 - cos((st.wMinute + st.wSecond / 60.0 + st.wMilliseconds / 60000.0)  / 60.0 * 2 * 3.14) * H / 3.5));
-    SelectObject(hMemDC, hOldPen);
-    DeleteObject(hPen);
-
-    hPen = CreatePen(PS_SOLID, 9, RGB(0, 0, 0));
-    hOldPen = SelectObject(hMemDC, hPen);
-    MoveToEx(hMemDC, W / 2 - W / 51, H / 2 + H / 27, NULL);
-    LineTo(hMemDC, (INT)(W / 2 - W / 51 + sin((st.wHour + st.wMinute / 60.0 + st.wSecond / 360.0) / 12.0 * 2 * 3.14) * W / 5), (INT)(H / 2 + H / 27 - cos((st.wHour + st.wMinute / 60.0 + st.wSecond / 360.0) / 12.0 * 2 * 3.14) * H / 5));
-    SelectObject(hMemDC, hOldPen);
-    DeleteObject(hPen);
+    SelectObject(hMemDC, GetStockObject(DC_PEN));
+    SetDCPenColor(hMemDC, RGB(0, 0, 0));
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(255, 105, 180));
+    DrawArrow(hMemDC, W / 2 - W / 51, H / 2 + H / 27, (INT)(W / 3.5), st.wMinute + st.wSecond / 60.0 + st.wMilliseconds / 60000.0, 60);
     
+    SelectObject(hMemDC, GetStockObject(DC_PEN));
+    SetDCPenColor(hMemDC, RGB(0, 0, 0));
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(202, 12, 12));
+    DrawArrow(hMemDC, W / 2 - W / 51, H / 2 + H / 27, (INT)(W / 5), st.wHour + st.wMinute / 60.0 + st.wSecond / 360.0, 12);
+    
+
     rc.bottom = H;
     rc.left = 0;
     rc.right = W;
@@ -88,7 +108,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     SetBkMode(hMemDC, TRANSPARENT);
     DrawText(hMemDC, Buf, wsprintf(Buf, "%02d:%02d:%02d", st.wHour, st.wMinute, st.wSecond), &rc, DT_CENTER);
     /*TextOut(hMemDC, 130, 30, Buf, wsprintf(Buf, "%02d:%02d:%02d", st.wHour, st.wMinute, st.wSecond)); */
-    
+
     BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY);
     
     EndPaint(hWnd, &ps);
