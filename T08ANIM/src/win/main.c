@@ -3,7 +3,10 @@
  * LAST UPDATE: 09.06.2026
  */
 #include <windows.h>
+#include <time.h>
 #include "def.h"
+#include "anim/rnd/rnd.h"
+
 /* Window class name */
 #define WND_CLASS_NAME "039"
 
@@ -32,8 +35,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   HWND hWnd;
 
   SetDbgMemHooks();
-
-  malloc(100);
 
   /* Window class register */
   wc.style = CS_VREDRAW | CS_HREDRAW;
@@ -75,36 +76,63 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   HDC hDC;
   PAINTSTRUCT ps;
   static INT W, H;
+  static va6PRIM Pr;
   
   switch (Msg)
   {  
 
   case WM_ERASEBKGND:
-    return 0;
+    return 1;
 
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
-
+    VA6_RndCopyFrame(hDC);
     EndPaint(hWnd, &ps);
     return 0;
 
   case WM_SIZE:
     W = LOWORD(lParam);
     H = HIWORD(lParam);
+    VA6_RndResize(W, H);
     SendMessage(hWnd, WM_TIMER, 47, 0);
 
     return 0;
 
   case WM_CREATE:
+    VA6_RndInit(hWnd);
+    if (VA6_RndPrimCreate(&Pr, 4, 6))
+    {
+      Pr.V[0].P = VecSet(0, 0, 0);
+      Pr.V[1].P = VecSet(2, 0, 0);
+      Pr.V[2].P = VecSet(0, 2, 0);
+      Pr.V[3].P = VecSet(2, 2, 0);
+ 
+      Pr.I[0] = 0;
+      Pr.I[1] = 1;
+      Pr.I[2] = 2;
+ 
+      Pr.I[3] = 2;
+      Pr.I[4] = 1;
+      Pr.I[5] = 3;
+    }
+
     hDC = GetDC(hWnd);
     ReleaseDC(hWnd, hDC);
     SetTimer(hWnd, 3, 8, NULL);
     return 0;
 
   case WM_TIMER:
+    VA6_RndStart();
+    VA6_RndEnd();
+    hDC = GetDC(hWnd);
+    VA6_RndPrimDraw(&Pr, MatrRotateY(30 * clock() / 1000.0));
+    VA6_RndCopyFrame(hDC);
+    ReleaseDC(hWnd, hDC);
     return 0;
 
   case WM_DESTROY:
+    VA6_RndClose();
+    VA6_RndPrimFree(&Pr);
     KillTimer(hWnd, 30);
     PostMessage(NULL, WM_QUIT, 0, 0);
     return 0;

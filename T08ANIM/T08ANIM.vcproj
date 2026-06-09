@@ -193,6 +193,26 @@
 			<Filter
 				Name="Animation System"
 				>
+				<Filter
+					Name="Rendering System"
+					>
+					<File
+						RelativePath=".\src\anim\rnd\rnd.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rndbase.c"
+						>
+					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rnddata.c"
+						>
+					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rndprim.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Windows Depended"
