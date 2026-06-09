@@ -62,14 +62,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
   
   hWnd = CreateWindowA(WND_CLASS_NAME, "umbrella", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-    1000, 100, 500, 400, NULL, NULL, hInstance, NULL);
-
-  CreateWindow("BUTTON", "Press me...", WS_CHILD | WS_VISIBLE,
-    10, 10, 100, 30, hWnd, (HMENU)123, hInstance, NULL);
-  CreateWindow("BUTTON", "Expand", WS_CHILD | WS_VISIBLE,
-    10, 47, 100, 30, hWnd, (HMENU)124, hInstance, NULL);
-  CreateWindow("BUTTON", "Select me", BS_CHECKBOX | WS_CHILD | WS_VISIBLE | WS_BORDER,
-    10, 84, 100, 30, hWnd, (HMENU)125, hInstance, NULL);
+    1000, 100, 500, 400, NULL, NULL, hInstance, NULL);  
 
   while (GetMessage(&msg, NULL, 0, 0))
   {
@@ -96,33 +89,6 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_ERASEBKGND:
     return 0;
 
-  case WM_COMMAND:
-    if (LOWORD(wParam) == 123)
-      SendMessage(hWnd, WM_CLOSE, 0, 0);
-    else if (LOWORD(wParam) == 124)
-    {
-      DWORD style = GetWindowLong(hWnd, GWL_STYLE);
- 
-      if (style & WS_MAXIMIZE)
-        ShowWindow(hWnd, SW_NORMAL);
-      else
-        ShowWindow(hWnd, SW_MAXIMIZE);
-      /* DestroyWindow((HWND)lParam); */
-    }
-    else if (LOWORD(wParam) == 125)
-    {
-      DWORD state = SendMessage((HWND)lParam, BM_GETSTATE, 0, 0);
- 
-      is_select = !!(state & BST_CHECKED);
- 
-      if (is_select)
-        SendMessage((HWND)lParam, BM_SETCHECK, BST_UNCHECKED, 0);
-      else
-        SendMessage((HWND)lParam, BM_SETCHECK, BST_CHECKED, 0);
-      InvalidateRect(hWnd, NULL, FALSE);
-    }
-    return 0;
-
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
     
@@ -133,11 +99,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     DeleteObject(hBr);
 
     srand(30);
-    /*for (i = 0; i < 30; i++)
-      DrawArrow(hWnd, hMemDC, rand() % W, rand() % H, 20);   */
-    for (i = 0; i < (H / 10); i++)
+    for (i = 0; i < 30; i++)
+      DrawArrow(hWnd, hMemDC, rand() % W, rand() % H, 20);
+    /*for (i = 0; i < (H / 10); i++)
       for (j = 0; j < (W / 10); j++)
-        DrawArrow(hWnd, hMemDC, H / 10 * i, W / 10 * j, 20);
+        DrawArrow(hWnd, hMemDC, H / 10 * i, W / 10 * j, 20);     */
     BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY);
     
     EndPaint(hWnd, &ps);

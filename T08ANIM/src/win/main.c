@@ -1,11 +1,9 @@
-/* FILE NAME  : t07globe.c
+/* FILE NAME  : main.c
  * PROGRAMMER : VA6
- * LAST UPDATE: 06.06.2026
+ * LAST UPDATE: 09.06.2026
  */
 #include <windows.h>
-#include <math.h>
-#include "globe.h"
-#include "timer.h"
+#include "def.h"
 /* Window class name */
 #define WND_CLASS_NAME "039"
 
@@ -33,6 +31,10 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   MSG msg;
   HWND hWnd;
 
+  SetDbgMemHooks();
+
+  malloc(100);
+
   /* Window class register */
   wc.style = CS_VREDRAW | CS_HREDRAW;
   wc.cbClsExtra = 0;
@@ -52,7 +54,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
   
   /* Create window */
-  hWnd = CreateWindowA(WND_CLASS_NAME, "globe", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+  hWnd = CreateWindowA(WND_CLASS_NAME, "anim", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
     100, 100, 700, 700, NULL, NULL, hInstance, NULL);
 
   /* Message loop */
@@ -71,12 +73,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
   HDC hDC;
-  static BITMAP bm;
-  static HBITMAP hBm;
   PAINTSTRUCT ps;
   static INT W, H;
-  static HBITMAP hBmClockface;
-  static HDC hMemDCClockface, hMemDC;
   
   switch (Msg)
   {  
@@ -84,64 +82,29 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   case WM_ERASEBKGND:
     return 0;
 
-  case WM_KEYDOWN:
-    if (wParam == 'P')
-      GLB_IsPause = !GLB_IsPause;
-    return 0;
-  
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
 
-    BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY);
-    
     EndPaint(hWnd, &ps);
     return 0;
 
   case WM_SIZE:
     W = LOWORD(lParam);
     H = HIWORD(lParam);
+    SendMessage(hWnd, WM_TIMER, 47, 0);
 
-    GLB_Resize(W, H);
-
-    if (hBm != NULL)
-      DeleteObject(hBm);
-
-    hDC = GetDC(hWnd);
-    hBm = CreateCompatibleBitmap(hDC, W, H);
-
-    ReleaseDC(hWnd, hDC);
     return 0;
 
   case WM_CREATE:
     hDC = GetDC(hWnd);
-    hMemDC = CreateCompatibleDC(hDC);
-    hBm = NULL;
-    
-    GLB_TimerInit();
-    GLB_Init(0.3);
     ReleaseDC(hWnd, hDC);
     SetTimer(hWnd, 3, 8, NULL);
     return 0;
 
   case WM_TIMER:
-    SelectObject(hMemDC, hBm);
-    
-    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
-    SelectObject(hMemDC, GetStockObject(DC_PEN));
-
-    SetDCPenColor(hMemDC, RGB(0, 0, 0));
-    SetDCBrushColor(hMemDC, RGB(0, 0, 0));
-    Rectangle(hMemDC, 0, 0, W, H);
-
-    GLB_TimerResponse();
-    GLB_Draw(hMemDC);
-    
-    InvalidateRect(hWnd, NULL, TRUE);
-    break;
+    return 0;
 
   case WM_DESTROY:
-    DeleteObject(hBm);
-    DeleteDC(hMemDC);
     KillTimer(hWnd, 30);
     PostMessage(NULL, WM_QUIT, 0, 0);
     return 0;
@@ -149,4 +112,4 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   return DefWindowProc(hWnd, Msg, wParam, lParam);
 }/* End of 'MyWindowFunc' function */
     
-/* END OF 't07globe.c' FILE */
+/* END OF 'main.c' FILE */

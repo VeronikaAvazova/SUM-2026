@@ -3,9 +3,19 @@
  * LAST UPDATE: 06.06.2026
  */
 #include "globe.h"
+#include "timer.h"
 #include <windows.h>
 #include <math.h>
 #include <time.h>
+
+
+static DBL GLB_Ws, GLB_Hs;
+static DBL GLB_Wp, GLB_Hp, GLB_ProjSize = 1;
+static DBL GLB_ProjDist = 1;
+
+static VEC GLB_Geom[GLB_GRID_H][GLB_GRID_W];
+static VEC GLB_GeomN[GLB_GRID_H][GLB_GRID_W];
+
 
 VOID GLB_Resize( INT Ws, INT Hs )
 {
@@ -58,34 +68,75 @@ VEC RotateX( VEC P, DBL Angle )
   return NewP;
 } /* End of 'RotateX' function */
 
+/* Rotate vector around Y axis function.
+ * ARGUMENTS:
+ *   - vector coordinates:
+ *       VEC P;
+ *   - rotation angle in degrees:
+ *       DBL Angle;
+ * RETURNS:
+ *   (VEC) rotated vector.
+ */
+VEC RotateY( VEC P, DBL Angle )
+{
+  VEC NewP;
+  DBL a = Angle * PI / 180, si = sin(a), co = cos(a);
+ 
+  NewP.X = P.Z * si + P.X * co;
+  NewP.Y = P.Y;
+  NewP.Z = P.Z * co - P.X * si;
+  return NewP;
+} /* End of 'RotateY' function */
+
+COLORREF ColorTo255( VEC Color )
+{
+  INT 
+    R = (INT)(Color.X * 255),
+    G = (INT)(Color.Y * 255),
+    B = (INT)(Color.Z * 255);
+
+  R = GLB_MIN(255, GLB_MAX(0, R));
+  G = GLB_MIN(255, GLB_MAX(0, R));
+  B = GLB_MIN(255, GLB_MAX(0, R));
+
+  return RGB(R, G, B);
+}
+
 VOID GLB_Draw( HDC hDC )
 {
   static POINT pnts[GLB_GRID_H][GLB_GRID_W];
   POINT pts[4];
-  DBL len;
-  INT s = 2, i, j;  
+  DBL xp, yp;
+  INT s = 2, i, j;
+  VEC L = VecNormalize(VecSet(1, 1, 1));
+  MATR m;
+  DBL t = GLB_Time;
 
   GLB_Init(0.3);
+  GLB_TimerInit();
   SelectObject(hDC, GetStockObject(DC_BRUSH));
   SelectObject(hDC, GetStockObject(DC_PEN));
 
   SetDCPenColor(hDC, RGB(248, 24, 148));
   SetDCBrushColor(hDC, RGB(255, 240, 31));
     
+  m = MatrMulMatr(MatrMulMatr(MatrRotateZ(47 * t), MatrRotateY(60 * t)), MatrTranslate(VecSet(0, 0, -3)));
   for (i = 0; i < GLB_GRID_H; i++)
     for (j = 0; j < GLB_GRID_W; j++)
     {
-      VEC P = GLB_Geom[i][j];
+      VEC P = PointTransform(GLB_Geom[i][j], m);
 
-      P = RotateX(P, 45);
-      pnts[i][j].x = (INT)(P.X * GLB_Ws / GLB_Wp + GLB_Ws / 2);
-      pnts[i][j].y = (INT)(- P.Y * GLB_Hs / GLB_Hp + GLB_Hs / 2);
+      xp = P.X * GLB_ProjDist / - P.Z;
+      yp = P.Y * GLB_ProjDist / - P.Z;
+ 
+      pnts[i][j].x = (INT)(xp * GLB_Ws / GLB_Wp + GLB_Ws / 2);
+      pnts[i][j].y = (INT)(- yp * GLB_Hs / GLB_Hp + GLB_Hs / 2);
     }
 
-  for (i = 0; i < GLB_GRID_H; i++)
+  /*for (i = 0; i < GLB_GRID_H; i++)
     for (j = 0; j < GLB_GRID_W; j++)
       Ellipse(hDC, pnts[i][j].x - s, pnts[i][j].y - s,
-                   pnts[i][j].x + s, pnts[i][j].y + s);
+                   pnts[i][j].x + s, pnts[i][j].y + s);  */
 
   for (i = 0; i < GLB_GRID_H; i++)
   {
@@ -104,30 +155,29 @@ VOID GLB_Draw( HDC hDC )
   for (i = 0; i < GLB_GRID_H - 1; i++)
     for (j = 0; j < GLB_GRID_W - 1; j++)
     {
-      VEC N = GLB_GeomN[i][j], L;
-      DBL nl = N.X * L.X + N.Y * L.Y + N.Z * L.Z;
-      VEC C = {0.47 * nl, 0.8 * nl, 0.30 * nl};
+      VEC N = VectorTransform(GLB_GeomN[i][j], m);
+      DBL nl = VecDotVec(N, L);
+      VEC C = VecMulNum(VecSet(1, 0.8, 1), nl);
 
-      L.X = 1;
-      L.Y = 1;
-      L.Z = 1;
-      len = sqrt(L.X * L.X + L.Y * L.Y + L.Z * L.Z);
-      L.X /= len;
-      L.Y /= len;
-      L.Z /= len;
+      pts[0] = pnts[i][j];
+      pts[1] = pnts[i][j + 1];
+      pts[2] = pnts[i + 1][j + 1];
+      pts[3] = pnts[i + 1][j];
 
-      if ((pts[0].x - pts[1].x) * (pts[0].y - pts[1].y) +
-          (pts[1].x - pts[2].x) * (pts[1].y - pts[2].y) +
-          (pts[2].x - pts[3].x) * (pts[2].y - pts[3].y) +
-          (pts[3].x - pts[0].x) * (pts[3].y - pts[4].y) <= 0)
+      SetDCBrushColor(hDC, ColorTo255(C));
+      if ((pts[0].x - pts[1].x) * (pts[0].y + pts[1].y) +
+          (pts[1].x - pts[2].x) * (pts[1].y + pts[2].y) +
+          (pts[2].x - pts[3].x) * (pts[2].y + pts[3].y) +
+          (pts[3].x - pts[0].x) * (pts[3].y + pts[0].y) >= 0)
         Polygon(hDC, pts, 4);
+
     }
 }
 
 VOID GLB_Init( DBL R )
 {
   INT i, j; 
-  DBL t = 0.03 * clock() / (DBL)CLOCKS_PER_SEC;
+  DBL t = GLB_Time;
   
   for (i = 0; i < GLB_GRID_H; i++)
     for (j = 0; j < GLB_GRID_W; j++)
