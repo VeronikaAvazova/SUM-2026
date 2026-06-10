@@ -60,14 +60,14 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   /* Message loop */
   while (TRUE)
-  if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-  {
-    if (msg.message == WM_QUIT)
-      break;
-    DispatchMessage(&msg);
-  }
-  else
-    SendMessage(hWnd, WM_TIMER, 47, 0);
+    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    {
+      if (msg.message == WM_QUIT)
+        break;
+      DispatchMessage(&msg);
+    }
+    else
+      SendMessage(hWnd, WM_TIMER, 47, 0);
   return msg.wParam;
 } /* End of 'WinMain' function */
 
@@ -76,7 +76,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   HDC hDC;
   PAINTSTRUCT ps;
   static INT W, H;
-  static va6PRIM Pr;
+  static va6PRIM Pr, Pr1, Pr2, Pr3;
   
   switch (Msg)
   {  
@@ -100,6 +100,8 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
 
   case WM_CREATE:
     VA6_RndInit(hWnd);
+    
+    SetTimer(hWnd, 3, 8, NULL);
     if (VA6_RndPrimCreate(&Pr, 4, 6))
     {
       Pr.V[0].P = VecSet(0, 0, 0);
@@ -115,24 +117,51 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
       Pr.I[4] = 1;
       Pr.I[5] = 3;
     }
+    
+    VA6_RndPrimCreateSphere(&Pr1, 1, 8, 5);
+    VA6_RndPrimCreate—ylinder(&Pr2, 3, 30, 4);
+    /* VA6_RndPrimCreateThor(&Pr3, 3, 20, 20);    */
 
-    hDC = GetDC(hWnd);
-    ReleaseDC(hWnd, hDC);
-    SetTimer(hWnd, 3, 8, NULL);
     return 0;
 
   case WM_TIMER:
     VA6_RndStart();
-    VA6_RndEnd();
+   
     hDC = GetDC(hWnd);
-    VA6_RndPrimDraw(&Pr, MatrRotateY(30 * clock() / 1000.0));
+    
+   /* SelectObject(VA6_hRndDCFrame, GetStockObject(DC_PEN));
+    SetDCPenColor(VA6_hRndDCFrame, RGB(168, 228, 160));
+    VA6_RndPrimDraw(&Pr, MatrRotateY(30.0 * clock() / 1000.0));   */
+
+    SelectObject(VA6_hRndDCFrame, GetStockObject(DC_PEN));
+    SetDCPenColor(VA6_hRndDCFrame, RGB(255, 117, 20));
+    Pr1.Trans = MatrTranslate(VecSet(2, 1, 0));
+    /* VA6_RndPrimDraw(&Pr1, MatrTranslate(VecSet(0, fabs(sin(3 * clock() / 1000.0)), 0)));  */
+
+    SelectObject(VA6_hRndDCFrame, GetStockObject(DC_PEN));
+    SetDCPenColor(VA6_hRndDCFrame, RGB(168, 228, 160));
+    /* Pr2.Trans = MatrTranslate(VecSet(2, 1, 0));
+    VA6_RndPrimDraw(&Pr2, MatrRotateY(30.0 * clock() / 1000.0)); */
+
+    /* Pr3.Trans = MatrTranslate(VecSet(2, 1, 0));
+    VA6_RndPrimDraw(&Pr3, MatrRotateY(30.0 * clock() / 1000.0));  */
+    VA6_RndPrimLoad(&Pr3, "bin/models/cow.obj");
+    Pr3.Trans = MatrMulMatr(MatrScale(VecSet1(1.1)), MatrTranslate(VecSet(-2, 2, 0)));
+    VA6_RndPrimDraw(&Pr3, MatrTranslate(VecSet(0, fabs(sin(3 * clock() / 1000.0)), 0)));
+
+
+
+    VA6_RndEnd();
     VA6_RndCopyFrame(hDC);
     ReleaseDC(hWnd, hDC);
     return 0;
 
   case WM_DESTROY:
-    VA6_RndClose();
     VA6_RndPrimFree(&Pr);
+    VA6_RndPrimFree(&Pr1);
+    VA6_RndPrimFree(&Pr2);
+    /* VA6_RndPrimFree(&Pr3);   */ 
+    VA6_RndClose();
     KillTimer(hWnd, 30);
     PostMessage(NULL, WM_QUIT, 0, 0);
     return 0;

@@ -41,6 +41,10 @@ BOOL VA6_RndPrimCreate( va6PRIM *Pr, INT NoofV, INT NoofI );
 VOID VA6_RndPrimFree( va6PRIM *Pr );
 VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World );
 BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName );
+BOOL VA6_RndPrimCreateSphere( va6PRIM *Pr, DBL R, INT W, INT H ); 
+BOOL VA6_RndPrimCreate—ylinder( va6PRIM *Pr, DBL R, INT W, INT H );
+/* BOOL VA6_RndPrimCreateThor( va6PRIM *Pr, DBL R, INT W, INT H ); */
+BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName );
 
 VOID VA6_RndInit( HWND hWnd );
 VOID VA6_RndClose( VOID );

@@ -26,7 +26,6 @@
 #include <stdlib.h>
 
 #include "mth/mth.h"
-#include <windows.h>
 
 #endif /* __def_h_ */
  

@@ -126,7 +126,7 @@ __inline MATR MatrRotateX( DBL a )
  
   return r;
 }
-
+                                                     
 __inline MATR MatrRotateY( DBL a )
 {
   MATR r =
@@ -411,15 +411,13 @@ __inline MATR MatrRotate( VEC P, DBL a )
   m.A[0][3] = 0;
   m.A[1][3] = 0;
   m.A[2][3] = 0;
-  m.A[3][3] = 0;
+  m.A[3][3] = 1;
   m.A[3][0] = 0;
   m.A[3][1] = 0;
   m.A[3][2] = 0;
 
   return m;
 }
-
-#define MatrMulMatr3(A, B, C) MatrMulMatr(A, (B, C))
 
 /* Perspective (frustum) projection matrix setup function.
  * ARGUMENTS:
@@ -468,6 +466,8 @@ __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
  
   return m;
 } /* End of 'MatrView' function */
+
+#define MatrMulMatr3(A, B, C) MatrMulMatr(A, MatrMulMatr(B, C))
 
 #endif /* __mth_h_ */
  

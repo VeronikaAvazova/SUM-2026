@@ -56,6 +56,8 @@ VOID VA6_RndStart( VOID )
 {
   SelectObject(VA6_hRndDCFrame, GetStockObject(DC_BRUSH));
   SetDCBrushColor(VA6_hRndDCFrame, RGB(0, 0, 0));
+  SelectObject(VA6_hRndDCFrame, GetStockObject(DC_PEN));
+  SetDCPenColor(VA6_hRndDCFrame, RGB(0, 0, 0));
   Rectangle(VA6_hRndDCFrame, 0, 0, VA6_RndFrameW, VA6_RndFrameH);
 }
 
