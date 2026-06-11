@@ -3,6 +3,9 @@
  * LAST UPDATE: 11.06.2026
  */
 
+#ifndef __anim_h_
+#define __anim_h_
+
 #include "rnd/rnd.h"
 
 #define VA6_MAX_UNITS 3000
@@ -10,7 +13,7 @@
 typedef struct tagva6UNIT va6UNIT;
 typedef struct tagva6ANIM va6ANIM;
 
-#define UNIT_BASE_FIELDS \
+#define VA6_UNIT_BASE_FIELDS \
   VOID (*Init)( va6UNIT *Uni, va6ANIM *Ani );      \
   VOID (*Close)( va6UNIT *Uni, va6ANIM *Ani );     \
   VOID (*Response)( va6UNIT *Uni, va6ANIM *Ani );  \
@@ -19,7 +22,7 @@ typedef struct tagva6ANIM va6ANIM;
 
 struct tagva6UNIT
 {
-  UNIT_BASE_FIELDS;
+  VA6_UNIT_BASE_FIELDS;
 };
 
 struct tagva6ANIM
@@ -52,6 +55,9 @@ VOID VA6_AnimFlipFullScreen( VOID );
 VOID VA6_AnimExit( VOID );
 
 VOID VA6_AnimUnitAdd( va6UNIT *Uni );
+va6UNIT * VA6_AnimUnitCreate( INT Size );
 
 VOID VA6_TimerInit( VOID );
 VOID VA6_TimerResponse( VOID );
+
+#endif /* __anim_h_ */

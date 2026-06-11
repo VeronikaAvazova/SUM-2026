@@ -3,39 +3,44 @@
  * LAST UPDATE: 11.06.2026
  */
 
-#include "anim/anim.h"
 #include "units.h"
 
-typedef struct 
+typedef struct tagva6UNIT_BALL
 {
-  UNIT_BASE_FIELDS;
+  VA6_UNIT_BASE_FIELDS;
   VEC Pos;
+  va6PRIM Ball;
 } va6UNIT_BALL;
 
 static VOID VA6_UnitInit( va6UNIT_BALL *Uni, va6ANIM *Ani )
 {
-  Uni->Pos = VecSet(0, 1, 0);
+  VA6_RndPrimCreateSphere(&Uni->Ball, 1, 18, 8);
+  Uni->Pos = VecSet(Rnd1() * 8, 1, Rnd1() * 8);
+}
+
+static VOID VA6_UnitClose( va6UNIT_BALL *Uni, va6ANIM *Ani )
+{
+  VA6_RndPrimFree(&Uni->Ball); 
 }
 
 static VOID VA6_UnitResponse( va6UNIT_BALL *Uni, va6ANIM *Ani )
 {
-  Uni->Pos += Ani->DeltaTime * 2.4;
-}
+} 
 
 static VOID VA6_UnitRender( va6UNIT_BALL *Uni, va6ANIM *Ani )
 {
-  DrawSphere(Uni->Pos, 3);
+  VA6_RndPrimDraw(&Uni->Ball, MatrTranslate(Uni->Pos));
 }
 
-va6UNIT * VA6_UnitCreateBall( VOID )
+va6UNIT * VA6_AnimUnitCreateBall( VOID )
 {
   va6UNIT_BALL *Uni;
  
-  Uni = AnimUnitCreate(sizeof(UNIT_COW));
-  if ((Uni = (va6UNIT_BALL *)VA6_AnimUnitCreate(sizeof(va6UNIT_BALL) == NULL)
+  if ((Uni = (va6UNIT_BALL *)VA6_AnimUnitCreate(sizeof(va6UNIT_BALL))) == NULL)
     return NULL;
+
   Uni->Init = (VOID *)VA6_UnitInit;
-  Uni->Responce = (VOID *)VA6_UnitResponce;
+  Uni->Response = (VOID *)VA6_UnitResponse;
   Uni->Render = (VOID *)VA6_UnitRender;
   return (va6UNIT *)Uni;
 }

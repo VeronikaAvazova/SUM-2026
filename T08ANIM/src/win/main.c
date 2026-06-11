@@ -33,6 +33,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   WNDCLASS wc;
   MSG msg;
   HWND hWnd;
+  INT i;
 
   SetDbgMemHooks();
 
@@ -58,7 +59,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   hWnd = CreateWindowA(WND_CLASS_NAME, "anim", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
     100, 100, 700, 700, NULL, NULL, hInstance, NULL);
 
-  VA6_AnimUnitAdd(VA6_UnitCreateBall());
+  for (i = 0; i < 30; i++)
+    VA6_AnimAddUnit(VA6_AnimUnitCreateBall());
 
   /* Message loop */
   while (TRUE)
@@ -78,10 +80,29 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   HDC hDC;
   PAINTSTRUCT ps;
   static INT W, H;
-  static va6PRIM Pr, Pr1, Pr2, Pr3;
   
   switch (Msg)
   {  
+  
+  case WM_CREATE:
+    SetTimer(hWnd, 3, 8, NULL);
+    VA6_AnimInit(hWnd);
+    return 0;
+
+  case WM_SIZE:
+    VA6_AnimResize(LOWORD(lParam), HIWORD(lParam));
+    SendMessage(hWnd, WM_TIMER, 47, 0);
+    return 0;
+
+  case WM_TIMER:
+    VA6_AnimRender();
+    hDC = GetDC(hWnd);
+    VA6_AnimCopyFrame(hDC);
+    ReleaseDC(hWnd, hDC);
+    return 0;
+
+  case WM_KEYDOWN:
+    return 0;
 
   case WM_ERASEBKGND:
     return 1;
@@ -90,26 +111,6 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     hDC = BeginPaint(hWnd, &ps);
     VA6_AnimCopyFrame(hDC);
     EndPaint(hWnd, &ps);
-    return 0;
-
-  case WM_SIZE:
-    VA6_AnimResize(LOWORD(lParam), HIWORD(lParam));
-    SendMessage(hWnd, WM_TIMER, 47, 0);
-
-    return 0;
-
-  case WM_CREATE:
-    
-    SetTimer(hWnd, 3, 8, NULL);
-    VA6_AnimInit(hWnd);
-    return 0;
-
-  case WM_TIMER:
-    VA6_AnimRender();
-    hDC = GetDC(hWnd);
-
-    VA6_AnimCopyFrame(hDC);
-    ReleaseDC(hWnd, hDC);
     return 0;
 
   case WM_DESTROY:

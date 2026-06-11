@@ -469,6 +469,16 @@ __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
 
 #define MatrMulMatr3(A, B, C) MatrMulMatr(A, MatrMulMatr(B, C))
 
+__inline DBL Rnd1( VOID )
+{
+  return 2.0 * rand() / RAND_MAX - 1;
+}
+
+__inline DBL Rnd0( VOID )
+{
+  return (DBL)rand() / RAND_MAX;
+}
+
 #endif /* __mth_h_ */
  
 /* END OF 'mth.h' FILE */

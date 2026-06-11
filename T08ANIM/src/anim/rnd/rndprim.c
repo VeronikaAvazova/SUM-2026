@@ -38,7 +38,8 @@ VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World )
  
   if ((pnts = malloc(sizeof(POINT) * Pr->NumOfV)) == NULL)
     return;
- 
+  SelectObject(VA6_hRndDCFrame, GetStockObject(DC_PEN));
+  SetDCPenColor(VA6_hRndDCFrame, RGB(248, 24, 148));
   /* Build vertex projects */
   for (i = 0; i < Pr->NumOfV; i++)
   {
