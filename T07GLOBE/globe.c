@@ -112,7 +112,7 @@ VOID GLB_Draw( HDC hDC )
   MATR m;
   DBL t = GLB_Time;
 
-  GLB_Init(0.3);
+  GLB_Init(0.5);
   GLB_TimerInit();
   SelectObject(hDC, GetStockObject(DC_BRUSH));
   SelectObject(hDC, GetStockObject(DC_PEN));

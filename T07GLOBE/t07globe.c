@@ -3,6 +3,7 @@
  * LAST UPDATE: 06.06.2026
  */
 #include <windows.h>
+#include <stdio.h>
 #include <math.h>
 #include "globe.h"
 #include "timer.h"
@@ -77,9 +78,32 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
   static INT W, H;
   static HBITMAP hBmClockface;
   static HDC hMemDCClockface, hMemDC;
+  CHAR Buf[100];
   
   switch (Msg)
   {  
+
+  case WM_CREATE:
+    SetTimer(hWnd, 3, 8, NULL);
+    hDC = GetDC(hWnd);
+    hMemDC = CreateCompatibleDC(hDC);
+    ReleaseDC(hWnd, hDC);
+    hBm = NULL;
+
+    GLB_TimerInit();
+    GLB_Init(0.3);
+    return 0;
+
+  case WM_SIZE:
+    W = LOWORD(lParam);
+    H = HIWORD(lParam);
+    GLB_Resize(W, H);
+    if (hBm != NULL)
+      DeleteObject(hBm);
+    hDC = GetDC(hWnd);
+    hBm = CreateCompatibleBitmap(hDC, W, H);
+    ReleaseDC(hWnd, hDC);
+    return 0;
 
   case WM_ERASEBKGND:
     return 0;
@@ -97,46 +121,30 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     EndPaint(hWnd, &ps);
     return 0;
 
-  case WM_SIZE:
-    W = LOWORD(lParam);
-    H = HIWORD(lParam);
-
-    GLB_Resize(W, H);
-
-    if (hBm != NULL)
-      DeleteObject(hBm);
-
-    hDC = GetDC(hWnd);
-    hBm = CreateCompatibleBitmap(hDC, W, H);
-
-    ReleaseDC(hWnd, hDC);
-    return 0;
-
-  case WM_CREATE:
-    hDC = GetDC(hWnd);
-    hMemDC = CreateCompatibleDC(hDC);
-    hBm = NULL;
-    
-    GLB_TimerInit();
-    GLB_Init(0.3);
-    ReleaseDC(hWnd, hDC);
-    SetTimer(hWnd, 3, 8, NULL);
-    return 0;
 
   case WM_TIMER:
-    SelectObject(hMemDC, hBm);
-    
-    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
-    SelectObject(hMemDC, GetStockObject(DC_PEN));
-
-    SetDCPenColor(hMemDC, RGB(0, 0, 0));
-    SetDCBrushColor(hMemDC, RGB(0, 0, 0));
-    Rectangle(hMemDC, 0, 0, W, H);
-
     GLB_TimerResponse();
-    GLB_Draw(hMemDC);
+    if (W > 0 && H > 0)
+    {
+      SelectObject(hMemDC, hBm);
     
-    InvalidateRect(hWnd, NULL, TRUE);
+      SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+      SelectObject(hMemDC, GetStockObject(DC_PEN));
+
+      SetDCPenColor(hMemDC, RGB(0, 0, 0));
+      SetDCBrushColor(hMemDC, RGB(0, 0, 0));
+      Rectangle(hMemDC, 0, 0, W, H);
+
+      GLB_Draw(hMemDC);
+
+      SetBkMode(hMemDC, TRANSPARENT);
+      SetTextColor(hMemDC, RGB(55, 255, 255));
+      TextOut(hMemDC, 30, 30, Buf, sprintf(Buf, "FPS: %.2f", GLB_FPS));
+
+      hDC = GetDC(hWnd);
+      ReleaseDC(hWnd, hDC);
+      InvalidateRect(hWnd, NULL, TRUE);
+    }
     break;
 
   case WM_DESTROY:

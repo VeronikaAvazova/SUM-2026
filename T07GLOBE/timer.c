@@ -30,11 +30,11 @@ VOID GLB_TimerInit( VOID )
   TimePerSec = t.QuadPart;
   QueryPerformanceCounter(&t);
   StartTime = OldTime = OldTimeFPS = t.QuadPart;
-  PauseTime = 0;
   FrameCounter = 0;
   GLB_IsPause = FALSE;
-  //GLB_Time = GLB_DeltaTime = 0;
   GLB_FPS = 30;
+  PauseTime = 0;
+  /*GLB_Time = GLB_DeltaTime = 0;   */
 } 
 
 VOID GLB_TimerResponse( VOID )
@@ -48,20 +48,20 @@ VOID GLB_TimerResponse( VOID )
   GlobalDeltaTime = (DOUBLE)(t.QuadPart - OldTime) / TimePerSec;
 
   /* Time with pause */
-  if (!GLB_IsPause)
-  {
-    GLB_Time = (DOUBLE)(t.QuadPart - PauseTime - StartTime) / TimePerSec;
-    GLB_DeltaTime = GlobalDeltaTime;
-  }
-  else
+  if (GLB_IsPause)
   {
     GLB_DeltaTime = 0;
     PauseTime += t.QuadPart - OldTime;
   }
+  else
+  {
+    GLB_DeltaTime = GlobalDeltaTime;
+    GLB_Time = (DOUBLE)(t.QuadPart - PauseTime - StartTime) / TimePerSec;
+  }
  
   /* FPS */
   FrameCounter++;
-  if (t.QuadPart - OldTimeFPS > 3 * TimePerSec)
+  if (t.QuadPart - OldTimeFPS > TimePerSec)
   {
     GLB_FPS = FrameCounter * TimePerSec / (DOUBLE)(t.QuadPart - OldTimeFPS);
     OldTimeFPS = t.QuadPart;
