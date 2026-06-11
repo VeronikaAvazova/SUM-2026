@@ -24,11 +24,16 @@ static UINT64
 
 VOID GLB_TimerInit( VOID )
 {
-  StartTime = OldTime = OldTimeFPS = clock();
+  LARGE_INTEGER t;
+ 
+  QueryPerformanceFrequency(&t);
+  TimePerSec = t.QuadPart;
+  QueryPerformanceCounter(&t);
+  StartTime = OldTime = OldTimeFPS = t.QuadPart;
   PauseTime = 0;
   FrameCounter = 0;
   GLB_IsPause = FALSE;
-  GLB_Time = GLB_DeltaTime = 0;
+  //GLB_Time = GLB_DeltaTime = 0;
   GLB_FPS = 30;
 } 
 
