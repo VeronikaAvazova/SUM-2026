@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="T08ANIM"
+	Name="T09ANIM"
 	ProjectGUID="{63B887F4-4BC4-4D06-854A-CEADA2B73645}"
-	RootNamespace="T08ANIM"
+	RootNamespace="T09ANIM"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -202,10 +202,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\anim\input.c"
-					>
-				</File>
-				<File
 					RelativePath=".\src\anim\timer.c"
 					>
 				</File>
@@ -232,6 +228,14 @@
 						RelativePath=".\src\anim\rnd\rndprim.c"
 						>
 					</File>
+					<Filter
+						Name="OpenGL"
+						>
+						<File
+							RelativePath=".\src\anim\rnd\opengl\glew.c"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
