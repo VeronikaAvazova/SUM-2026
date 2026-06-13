@@ -57,7 +57,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   
   /* Create window */
   hWnd = CreateWindowA(WND_CLASS_NAME, "anim", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-    100, 100, 700, 700, NULL, NULL, hInstance, NULL);
+      100, 100, 700, 700, NULL, NULL, hInstance, NULL);
 
   for (i = 0; i < 30; i++)
     VA6_AnimAddUnit(VA6_AnimUnitCreateBall());

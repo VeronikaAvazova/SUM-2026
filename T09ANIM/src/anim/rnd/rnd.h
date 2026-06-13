@@ -25,26 +25,41 @@ extern MATR
   VA6_RndMatrVP;   /* Stored (View * Proj) matrix */
 
 typedef struct tagva6VERTEX
-{
-  VEC P;  /* Vertex position */
-  VEC4 C;
-  VEC2 T;
-  VEC N; 
+ {
+  VEC P;   /* позици€ */
+  VEC2 T;  /* текстурна€ координата */
+  VEC N;   /* нормаль */
+  VEC4 C;  /* ÷вет (r,g,b,a) */
 } va6VERTEX;
 
+/* Primitive type */
+typedef enum tagva6PRIM_TYPE
+{
+  VA6_RND_PRIM_POINTS,   /* Array of points  Ц GL_POINTS */
+  VA6_RND_PRIM_LINES,    /* Line segments (by 2 points) Ц GL_LINES */
+  VA6_RND_PRIM_TRIMESH,  /* Triangle mesh - array of triangles Ц GL_TRIANGLES */
+} va6PRIM_TYPE;
+
+/* Primitive representation type */
 typedef struct tagva6PRIM
 {
-  va6VERTEX *V; /* Vertex attributes array */
-  INT NumOfV;   /* Number of vertices */
+  va6PRIM_TYPE Type; /* Primitive type */
  
-  INT *I;       /* Index array (for trimesh Ц by 3 ones) */
-  INT NumOfI;   /* Number of indices */
+  INT
+    VA,              /* Vertex array Id */
+    VBuf,            /* Vertex buffer Id */
+    IBuf;            /* Index buffer Id (if 0 - use only vertex buffer) */
+ 
+  INT NumOfElements; /* Number of indices/vecrtices */
+ 
+  VEC MinBB, MaxBB;  /* Bound box */
  
   MATR Trans;   /* Additional transformation matrix */
 } va6PRIM;
  
 
-BOOL VA6_RndPrimCreate( va6PRIM *Pr, INT NoofV, INT NoofI );
+VOID VA6_RndPrimCreate( va6PRIM *Pr, va6PRIM_TYPE Type,
+                        va6VERTEX *V, INT NoofV, INT *Ind, INT NoofI );
 VOID VA6_RndPrimFree( va6PRIM *Pr );
 VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World );
 BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName );

@@ -17,6 +17,8 @@ VOID VA6_AnimInit( HWND hWnd )
   VA6_Anim.hDC = VA6_hRndDCFrame;
   VA6_Anim.W = VA6_RndFrameW;
   VA6_Anim.H = VA6_RndFrameH;
+  VA6_TimerInit();
+  VA6_AnimInputInit();
 }
 
 VOID VA6_AnimClose( VOID )
@@ -48,7 +50,8 @@ VOID VA6_AnimRender( VOID )
 {
   INT i;
 
-  //VA6_TimerResponse();
+  VA6_TimerResponse();
+  VA6_AnimInputResponce();
 
   for (i = 0; i < VA6_Anim.NumOfUnits; i++)
     VA6_Anim.Units[i]->Response(VA6_Anim.Units[i], &VA6_Anim);

@@ -17,5 +17,25 @@ static VOID KeyboardInit( VOID )
   memcpy(OldKeys, VA6_Anim.Keys, 256);
 }
 
-static VOID Keyboar  ( VOID )
+static VOID KeyboarResponce( VOID )
 {
+  INT i;
+
+  GetKeyboardState(VA6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+  {
+    VA6_Anim.Keys[i] >>= 7;
+    VA6_Anim.KeysClick[i] = VA6_Anim.Keys[i] && !OldKeys[i];
+  }
+  memcpy(OldKeys, VA6_Anim.Keys, 256);
+}
+
+VOID VA6_AnimInputInit( VOID )
+{
+  KeyboardInit();
+}
+
+VOID VA6_AnimInputResponce( VOID )
+{
+  KeyboarResponce();
+}

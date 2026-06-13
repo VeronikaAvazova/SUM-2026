@@ -5,4 +5,5 @@
 
 #include "anim/anim.h"
 
-va6UNIT * VA6_AnimUnitCreateBall( VOID );
+va6UNIT * VA6_AnimUnitCreateBall( VOID ); 
+va6UNIT * VA6_UnitCreateControl( VOID );

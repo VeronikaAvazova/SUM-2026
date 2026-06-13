@@ -48,6 +48,7 @@ typedef struct tagVEC2
   FLT X, Y; /* Vector coordinates */
 } VEC2;
  
+
 /* Transformation matrix representation type */
 typedef struct tagMATR
 {
@@ -259,7 +260,6 @@ __inline VEC VecMulMatr( VEC V, MATR M )
                 (V.X * M.A[0][2] + V.Y * M.A[1][2] + V.Z * M.A[2][2] + M.A[3][2]) / w);
 } /* End of 'VecMulMatr' function */
 
-Vec4MulNum
 
 /* единичная матрица */
 __inline MATR MatrIdentity( VOID )
@@ -500,6 +500,35 @@ __inline DBL Rnd1( VOID )
 {
   return 2.0 * rand() / RAND_MAX - 1;
 } /* End of 'Rnd1' function */
+
+/* Obtain minimum of two vectors function.
+ * ARGUMENTS:
+ *   - vectors to be compare:
+ *       VEC V1, V2;
+ * RETURNS:
+ *   (VEC) result vector.
+ */
+__inline VEC VecMinVec( VEC V1, VEC V2 )
+{
+  return VecSet(V1.X < V2.X ? V1.X : V2.X,
+                V1.Y < V2.Y ? V1.Y : V2.Y,
+                V1.Z < V2.Z ? V1.Z : V2.Z);
+} /* End of 'VecMinVec' function */
+
+/* Obtain minimum of two vectors function.
+ * ARGUMENTS:
+ *   - vectors to be compare:
+ *       VEC V1, V2;
+ * RETURNS:
+ *   (VEC) result vector.
+ */
+__inline VEC VecMaxVec( VEC V1, VEC V2 )
+{
+  return VecSet(V1.X > V2.X ? V1.X : V2.X,
+                V1.Y > V2.Y ? V1.Y : V2.Y,
+                V1.Z > V2.Z ? V1.Z : V2.Z);
+} /* End of 'VecMinVec' function */
+
 
 #endif /* __mth_h_ */
  

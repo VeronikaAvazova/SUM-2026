@@ -2,17 +2,15 @@
  * PROGRAMMER : VA6
  * LAST UPDATE: 09.06.2026
  */
-#include <time.h>
-#include <windows.h>
-
+#include "anim.h"
 
 typedef unsigned long long UINT64;
 
 DOUBLE GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
-  GLB_Time, GLB_DeltaTime,             /* Time with pause and interframe interval */
-  GLB_FPS;                         /* Frames per second value */
+  Time, DeltaTime,             /* Time with pause and interframe interval */
+  FPS;                         /* Frames per second value */
 BOOL
-  GLB_IsPause;                     /* Pause flag */
+  IsPause;                     /* Pause flag */
 
 static UINT64
   StartTime,    /* Start program time */
@@ -22,48 +20,50 @@ static UINT64
   TimePerSec,   /* Timer resolution */
   FrameCounter; /* Frames counter */
 
-VOID GLB_TimerInit( VOID )
+VOID VA6_TimerInit( VOID )
 {
   LARGE_INTEGER t;
  
   QueryPerformanceFrequency(&t);
   TimePerSec = t.QuadPart;
   QueryPerformanceCounter(&t);
-  StartTime = OldTime = OldTimeFPS = t.QuadPart;
-  PauseTime = 0;
+
+  StartTime = t.QuadPart;
+
   FrameCounter = 0;
-  GLB_IsPause = FALSE;
-  //GLB_Time = GLB_DeltaTime = 0;
-  GLB_FPS = 30;
+  VA6_Anim.IsPause = FALSE;
+  VA6_Anim.FPS = 30.0;
+  VA6_Anim.Time = VA6_Anim.DeltaTime = 0;
+  PauseTime = 0;
 } 
 
-VOID GLB_TimerResponse( VOID )
+VOID VA6_TimerResponse( VOID )
 {
   LARGE_INTEGER t;
  
   QueryPerformanceCounter(&t);
  
   /* Global time */
-  GlobalTime = (DOUBLE)(t.QuadPart - StartTime) / TimePerSec;
-  GlobalDeltaTime = (DOUBLE)(t.QuadPart - OldTime) / TimePerSec;
+  VA6_Anim.GlobalTime = (DOUBLE)(t.QuadPart - StartTime) / TimePerSec;
+  VA6_Anim.GlobalDeltaTime = (DOUBLE)(t.QuadPart - OldTime) / TimePerSec;
 
   /* Time with pause */
-  if (!GLB_IsPause)
+  if (VA6_Anim.IsPause)
   {
-    GLB_Time = (DOUBLE)(t.QuadPart - PauseTime - StartTime) / TimePerSec;
-    GLB_DeltaTime = GlobalDeltaTime;
+    VA6_Anim.DeltaTime = 0;
+    PauseTime += t.QuadPart - OldTime;
   }
   else
   {
-    GLB_DeltaTime = 0;
-    PauseTime += t.QuadPart - OldTime;
+    VA6_Anim.DeltaTime = VA6_Anim.GlobalDeltaTime;
+    VA6_Anim.Time = (DOUBLE)(t.QuadPart - PauseTime - StartTime) / TimePerSec; 
   }
  
   /* FPS */
   FrameCounter++;
-  if (t.QuadPart - OldTimeFPS > 3 * TimePerSec)
+  if (t.QuadPart - OldTimeFPS > TimePerSec)
   {
-    GLB_FPS = FrameCounter * TimePerSec / (DOUBLE)(t.QuadPart - OldTimeFPS);
+    VA6_Anim.FPS = FrameCounter * TimePerSec / (DOUBLE)(t.QuadPart - OldTimeFPS);
     OldTimeFPS = t.QuadPart;
     FrameCounter = 0;
   }

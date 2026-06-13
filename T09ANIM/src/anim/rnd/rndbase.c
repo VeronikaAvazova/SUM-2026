@@ -59,16 +59,7 @@ VOID VA6_RndInit( HWND hWnd )
 
   if (glewInit() != GLEW_OK)
     exit(0);
- 
-  /* Render parameters setup */
-  glEnable(GL_DEPTH_TEST);
- 
-  VA6_RndProjSize = 0.1;
-  VA6_RndProjDist = VA6_RndProjSize;
-  VA6_RndProjFarClip = 300;
-  VA6_RndFrameW = 47;
-  VA6_RndFrameH = 47;
-  VA6_RndCamSet(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
+
 
   /* Enable a new OpenGL profile support */
   wglChoosePixelFormatARB(VA6_hRndDC, PixelAttribs, NULL, 1, &i, &nums);
@@ -82,10 +73,23 @@ VOID VA6_RndInit( HWND hWnd )
     VA6_hRndGLRC = hRC;
     wglMakeCurrent(VA6_hRndDC, VA6_hRndGLRC);
   }
+
+    /* Render parameters setup */
+  glEnable(GL_DEPTH_TEST);
+ 
+  VA6_RndProjSize = 0.1;
+  VA6_RndProjDist = VA6_RndProjSize;
+  VA6_RndProjFarClip = 300;
+  VA6_RndFrameW = 47;
+  VA6_RndFrameH = 47;
+  VA6_RndCamSet(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
+
+  VA6_RndResInit();
 }
 
 VOID VA6_RndClose( VOID )
 {
+  VA6_RndResClose();
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(VA6_hRndGLRC);
   ReleaseDC(VA6_hRndWnd, VA6_hRndDC);

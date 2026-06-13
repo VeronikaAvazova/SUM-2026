@@ -29,7 +29,7 @@ static VOID VA6_UnitResponse( va6UNIT_BALL *Uni, va6ANIM *Ani )
 
 static VOID VA6_UnitRender( va6UNIT_BALL *Uni, va6ANIM *Ani )
 {
-  VA6_RndPrimDraw(&Uni->Ball, MatrTranslate(Uni->Pos));
+  VA6_RndPrimDraw(&Uni->Ball, MatrTranslate(VecAddVec(Uni->Pos, VecSet(0, fabs(sin(5 * Ani->Time)), 0))));
 }
 
 va6UNIT * VA6_AnimUnitCreateBall( VOID )
