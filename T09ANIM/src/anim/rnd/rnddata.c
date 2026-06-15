@@ -8,7 +8,7 @@
 HWND VA6_hRndWnd;        /* Work window handle */
 HDC VA6_hRndDC;     /* Work window memory device context  */
 INT VA6_RndFrameW, VA6_RndFrameH; /* Work window size */
-HGLRC VA6_hRndGLRC;
+HGLRC VA6_hRndGLRC; /* OpenGL rendering context */
 
 DBL
   VA6_RndProjSize = 0.1,     /* Project plane fit square */

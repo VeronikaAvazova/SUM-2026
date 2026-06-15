@@ -3,12 +3,16 @@
  * LAST UPDATE: 09.06.2026
  */
 
-#include "rnd.h"
+#include <time.h>
 
+#include "rnd.h"
 #include "wglew.h"
 #include "gl/wglext.h"
 
-#pragma comment(lib, "opengl32")
+#include "gl/glu.h"
+
+#pragma comment(lib, "opengl32") 
+#pragma comment(lib, "glu32")
 
 
 VOID VA6_RndInit( HWND hWnd )
@@ -35,7 +39,6 @@ VOID VA6_RndInit( HWND hWnd )
                                   /* WGL_CONTEXT_CORE_PROFILE_BIT_ARB, */
     0
   };
-
   
   VA6_hRndWnd = hWnd;
 
@@ -60,7 +63,6 @@ VOID VA6_RndInit( HWND hWnd )
   if (glewInit() != GLEW_OK)
     exit(0);
 
-
   /* Enable a new OpenGL profile support */
   wglChoosePixelFormatARB(VA6_hRndDC, PixelAttribs, NULL, 1, &i, &nums);
   hRC = wglCreateContextAttribsARB(VA6_hRndDC, NULL, ContextAttribs);
@@ -69,27 +71,30 @@ VOID VA6_RndInit( HWND hWnd )
   {
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(VA6_hRndGLRC);
- 
     VA6_hRndGLRC = hRC;
     wglMakeCurrent(VA6_hRndDC, VA6_hRndGLRC);
   }
 
     /* Render parameters setup */
   glEnable(GL_DEPTH_TEST);
+  wglSwapIntervalEXT(0);
  
   VA6_RndProjSize = 0.1;
   VA6_RndProjDist = VA6_RndProjSize;
   VA6_RndProjFarClip = 300;
   VA6_RndFrameW = 47;
   VA6_RndFrameH = 47;
+
+  VA6_RndResize(47, 47);
   VA6_RndCamSet(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
 
-  VA6_RndResInit();
+ /* VA6_RndResInit();*/
 }
 
 VOID VA6_RndClose( VOID )
 {
-  VA6_RndResClose();
+  /* VA6_RndResClose();  */
+
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(VA6_hRndGLRC);
   ReleaseDC(VA6_hRndWnd, VA6_hRndDC);
@@ -102,6 +107,7 @@ VOID VA6_RndResize( INT W, INT H )
   /* Setup projection */
   VA6_RndFrameW = W;
   VA6_RndFrameH = H;
+
   VA6_RndProjSet();
 }
 
@@ -115,7 +121,7 @@ VOID VA6_RndStart( VOID )
 {
   VEC4 ClearColor = {0.30, 0.47, 0.8, 1};
   FLT DepthClearValue = 1;
- 
+
   /* Clear frame */
   glClearBufferfv(GL_COLOR, 0, &ClearColor.X);
   glClearBufferfv(GL_DEPTH, 0, &DepthClearValue);

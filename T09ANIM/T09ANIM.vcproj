@@ -202,6 +202,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\anim\input.c"
+					>
+				</File>
+				<File
 					RelativePath=".\src\anim\timer.c"
 					>
 				</File>
@@ -267,6 +271,14 @@
 				>
 				<File
 					RelativePath=".\src\units\u_ball.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\units\u_cow.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\units\u_ctrl.c"
 					>
 				</File>
 				<File

@@ -9,10 +9,15 @@
 typedef struct tagva6UNIT_CONTROL
 {
   VA6_UNIT_BASE_FIELDS;
+  VEC CamLoc, CamAt;
+  DBL Speed;
 } va6UNIT_CONTROL;
 
 static VOID VA6_UnitInit( va6UNIT_CONTROL *Uni, va6ANIM *Ani )
 {
+  Uni->CamLoc = VecSet(8, 8, 8);
+  Uni->CamAt = VecSet(0, 0, 0);
+  Uni->Speed = 1;
 }
 
 static VOID VA6_UnitClose( va6UNIT_CONTROL *Uni, va6ANIM *Ani )
@@ -21,11 +26,25 @@ static VOID VA6_UnitClose( va6UNIT_CONTROL *Uni, va6ANIM *Ani )
 
 static VOID VA6_UnitResponse( va6UNIT_CONTROL *Uni, va6ANIM *Ani )
 {
+  VEC d;
+
   /*if (Ani->Keys[VK_CONTROL] && Ani->KeysClick['F'])
     VG4_AnimFlipFullScreen(); */
  
   if (Ani->KeysClick['P'])
     Ani->IsPause = !Ani->IsPause;
+
+  if (Ani->KeysClick[VK_ESCAPE])
+    VA6_AnimDoExit();
+
+  d = VecNormalize(VecSubVec(Uni->CamAt, Uni->CamLoc));
+
+  Uni->CamLoc =
+    VecAddVec(Uni->CamLoc,
+      VecMulNum(d, Ani->GlobalDeltaTime * Uni->Speed *
+        (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN])));
+
+  VA6_RndCamSet(Uni->CamLoc, Uni->CamAt, VecSet(0, 1, 0));
 } 
 
 static VOID VA6_UnitRender( va6UNIT_CONTROL *Uni, va6ANIM *Ani )

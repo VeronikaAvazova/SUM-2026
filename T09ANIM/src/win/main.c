@@ -61,6 +61,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   for (i = 0; i < 30; i++)
     VA6_AnimAddUnit(VA6_AnimUnitCreateBall());
+  VA6_AnimAddUnit(VA6_AnimUnitCreateCow());
+  VA6_AnimAddUnit(VA6_UnitCreateControl());
 
   /* Message loop */
   while (TRUE)

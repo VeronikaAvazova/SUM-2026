@@ -41,6 +41,10 @@ struct tagva6ANIM
     FPS;                      
   BOOL
     IsPause;
+
+  BYTE
+    Keys[256],
+    KeysClick[256];
 };  
 
 extern va6ANIM VA6_Anim;
@@ -52,7 +56,9 @@ VOID VA6_AnimCopyFrame( VOID );
 VOID VA6_AnimRender( VOID );
 VOID VA6_AnimAddUnit( va6UNIT *Uni );
 VOID VA6_AnimFlipFullScreen( VOID );
-VOID VA6_AnimExit( VOID );
+VOID VA6_AnimDoExit( VOID );
+VOID VA6_AnimInputInit( VOID );
+VOID VA6_AnimInputResponce( VOID );
 
 VOID VA6_AnimUnitAdd( va6UNIT *Uni );
 va6UNIT * VA6_AnimUnitCreate( INT Size );

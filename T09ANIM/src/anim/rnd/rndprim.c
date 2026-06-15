@@ -5,20 +5,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "rnd.h"
-
-/* Primitive free function.
- * ARGUMENTS:
- *   - primitive to be free:
- *       vg4PRIM *Pr;
- * RETURNS: None.
- */
-VOID VA6_RndPrimFree( va6PRIM *Pr )
-{
-  glDeleteVertexArrays(1, &Pr->VA);
-  glDeleteBuffers(1, &Pr->VBuf);
-  glDeleteBuffers(1, &Pr->IBuf);
-  memset(Pr, 0, sizeof(va6PRIM));
-} /* End of 'VG4_RndPrimFree' function */
  
 /* Create primitive function.
  * ARGUMENTS:
@@ -96,6 +82,21 @@ VOID VA6_RndPrimCreate( va6PRIM *Pr, va6PRIM_TYPE Type,
   else
     Pr->NumOfElements = NoofV;
 } /* End of 'VG4_RndPrimCreate' function */
+
+
+/* Primitive free function.
+ * ARGUMENTS:
+ *   - primitive to be free:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VA6_RndPrimFree( va6PRIM *Pr )
+{
+  glDeleteVertexArrays(1, &Pr->VA);
+  glDeleteBuffers(1, &Pr->VBuf);
+  glDeleteBuffers(1, &Pr->IBuf);
+  memset(Pr, 0, sizeof(va6PRIM));
+} /* End of 'VG4_RndPrimFree' function */
  
 /* Primitive draw function.
  * ARGUMENTS:
@@ -141,27 +142,36 @@ VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World )
 BOOL VA6_RndPrimCreateSphere( va6PRIM *Pr, DBL R, INT W, INT H )
 {
   INT i, j, k;
-  DBL theta, phi;
+  DBL theta, phi, nl;
+  VEC L = VecNormalize(VecSet(1, 1, 1));
+  VEC C = VecSet(Rnd0(), Rnd0(), Rnd0());
   va6VERTEX *V;
   INT *Ind;
   INT size;
 
   memset(Pr, 0, sizeof(va6PRIM));
-  size = sizeof(va6VERTEX) * W * H + sizeof(INT) * (H - 1) * (W - 1) * 3 * 2;
+  size = sizeof(va6VERTEX) * W * H + sizeof(INT) * (H - 1) * (W - 1) * 2 * 3;
 
   if ((V = malloc(size)) == NULL)
     return FALSE;
+  Ind = (INT *)(V + W * H);
 
-  Ind = (INT *)(V - W * H);
-
-  VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, W * H, Ind, (H - 1) * (W - 1) * 3 * 2);
- 
   /* Fill vertex array */
   for (k = 0, i = 0, theta = 0; i < H; i++, theta += PI / (H - 1))
     for (j = 0, phi = 0; j < W; j++, phi += 2 * PI / (W - 1))
+    {
+      V[k].N = VecSet(sin(theta) * sin(phi),
+                      cos(theta),
+                      sin(theta) * cos(phi));
+      nl = VecDotVec(L, V[k].N);
+      if (nl < 0.1)
+        nl = 0.1;
+      V[k].C = Vec4SetVec3(VecMulNum(C, nl));
       V[k++].P = VecSet(R * sin(theta) * sin(phi),
                         R * cos(theta),
                         R * sin(theta) * cos(phi));
+    
+    }
   /* Fill vertex array */
   for (k = 0, i = 0; i < H - 1; i++)
     for (j = 0; j < W - 1; j++)
@@ -175,9 +185,34 @@ BOOL VA6_RndPrimCreateSphere( va6PRIM *Pr, DBL R, INT W, INT H )
       Ind[k++] = i * W + j + 1;
       Ind[k++] = (i + 1) * W + j + 1;
     }
+  VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, W * H, Ind, (H - 1) * (W - 1) * 2 * 3);
   return TRUE;
 } /* End of 'VA6_RndPrimCreateSphere' function */
 
+
+VOID VA6_RndPrimTriMeshAutoNormals( va6VERTEX *V, INT NumOfV, INT *Ind, INT NumOfI)
+{
+  INT i;
+
+  for (i = 0; i < NumOfV; i++)
+    V[i].N = VecSet(0, 0, 0);
+
+  for (i = 0; i < NumOfI; i += 3)
+  {
+    VEC
+      p0 = V[Ind[i]].P,
+      p1 = V[Ind[i + 1]].P,
+      p2 = V[Ind[i + 2]].P,
+      N = VecNormalize(VecCrossVec(VecSubVec(p1, p0), VecSubVec(p2, p0)));
+
+    V[Ind[i]].N = VecAddVec(V[Ind[i]].N, N);
+    V[Ind[i + 1]].N = VecAddVec(V[Ind[i + 1]].N, N);
+    V[Ind[i + 2]].N = VecAddVec(V[Ind[i + 2]].N, N);
+  }
+
+  for (i = 0; i < NumOfV; i++)
+    V[i].N = VecNormalize(V[i].N);
+}
 
 /* Primitive free function.
  * ARGUMENTS:
@@ -191,19 +226,15 @@ BOOL VA6_RndPrimCreateSphere( va6PRIM *Pr, DBL R, INT W, INT H )
 BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName )
 {
   FILE *F;
-  INT nv = 0, nf = 0;
-  static CHAR Buf[3000];
+  INT nv = 0, nf = 0, i;
+  VEC L = VecNormalize(VecSet(1, 1, 1));
   va6VERTEX *V;
   INT *Ind;
+  static CHAR Buf[3000];
   INT size;
 
+
   memset(Pr, 0, sizeof(va6PRIM));
-  size = sizeof(va6VERTEX) * nv + sizeof(INT) * nf * 3;
-
-  if ((V = malloc(size)) == NULL)
-    return FALSE;
-
-  Ind = (INT *)(V - nv);
  
   if ((F = fopen(FileName, "r")) == NULL)
     return FALSE;
@@ -228,13 +259,14 @@ BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName )
       nf += n - 2;
     }
   }
-  VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, nv, Ind, nf * 3);
-  /*if (!VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, nv, Ind, nf * 3))
-  {
-    fclose(F);
+
+  size = sizeof(va6VERTEX) * nv + sizeof(INT) * nf * 3;
+
+  if ((V = malloc(size)) == NULL)
     return FALSE;
-  }  */
- 
+  Ind = (INT *)(V + nv);
+
+
   /* Load model */
   rewind(F);
   nv = 0;
@@ -286,5 +318,16 @@ BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName )
     }
   }
   fclose(F);
+  VA6_RndPrimTriMeshAutoNormals(V, nv, Ind, nf);
+
+  for (i = 0; i < nv; i++)
+  {
+    FLT nl = VecDotVec(L, V[i].N);
+
+    if (nl < 0.1)
+      nl = 0.1;
+    V[i].C = Vec4SetVec3(VecMulNum(VecSet(0.8, 0.30, 0.47), nl * 1.30));
+  }
+  VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, nv, Ind, nf);
   return TRUE;
 } /* End of 'VA6_RndPrimLoad' function */

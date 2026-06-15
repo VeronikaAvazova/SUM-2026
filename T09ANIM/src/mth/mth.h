@@ -480,6 +480,7 @@ __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
 } /* End of 'MatrView' function */
 
 #define MatrMulMatr3(A, B, C) MatrMulMatr(A, MatrMulMatr(B, C))
+#define MatrMulMatr5(A, B, C, D, E) MatrMulMatr3(A, B, MatrMulMatr3(C, D, E))
 
 /* Random number obtain in range [0.0 .. 1.0] function.
  * ARGUMENTS: None.
@@ -514,6 +515,25 @@ __inline VEC VecMinVec( VEC V1, VEC V2 )
                 V1.Y < V2.Y ? V1.Y : V2.Y,
                 V1.Z < V2.Z ? V1.Z : V2.Z);
 } /* End of 'VecMinVec' function */
+
+
+__inline VEC4 Vec4Set( FLT X, FLT Y, FLT Z, FLT W )
+{
+  VEC4 r = {X, Y, Z, W};
+ 
+  return r;
+}
+
+__inline VEC4 Vec4SetVec3( VEC V)
+{
+  VEC4 v;
+
+  v.X = V.X;
+  v.Y = V.Y;
+  v.Z = V.Z;
+  v.W = 1;
+  return v;
+}
 
 /* Obtain minimum of two vectors function.
  * ARGUMENTS:
