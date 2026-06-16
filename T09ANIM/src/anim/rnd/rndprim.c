@@ -4,7 +4,7 @@
  */
 #include <string.h>
 #include <stdio.h>
-#include "rnd.h"
+#include "anim/anim.h"
  
 /* Create primitive function.
  * ARGUMENTS:
@@ -108,14 +108,22 @@ VOID VA6_RndPrimFree( va6PRIM *Pr )
  */
 VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World )
 {
-  MATR wvp = MatrMulMatr3(Pr->Trans, World, VA6_RndMatrVP);
-  INT prim_type =
-    Pr->Type == VA6_RND_PRIM_LINES ? GL_LINES :
-    Pr->Type == VA6_RND_PRIM_TRIMESH ? GL_TRIANGLES :
-    GL_POINTS;
+  MATR wvp = MatrMulMatr(World, MatrMulMatr(VA6_RndMatrView, VA6_RndMatrProj));
+  UINT ProgId = VA6_RndShaders[0].ProgId;
+  INT loc,
+    prim_type =
+      Pr->Type == VA6_RND_PRIM_LINES ? GL_LINES :
+      Pr->Type == VA6_RND_PRIM_TRIMESH ? GL_TRIANGLES :
+      GL_POINTS;
  
-  glLoadMatrixf(wvp.A[0]);
- 
+  /*glLoadMatrixf(wvp.A[0]);*/
+
+  glUseProgram(ProgId);
+  if ((loc = glGetUniformLocation(ProgId, "MatrWVP")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
+  if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
+    glUniform1f(loc, VA6_Anim.Time);
+
   glBindVertexArray(Pr->VA);
   if (Pr->IBuf == 0)
     glDrawArrays(prim_type, 0, Pr->NumOfElements);
@@ -126,6 +134,7 @@ VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World )
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
   glBindVertexArray(0);
+  glUseProgram(0); 
 } /* End of 'VG4_RndPrimDraw' function */
 
 /* Create sphere primitive function.

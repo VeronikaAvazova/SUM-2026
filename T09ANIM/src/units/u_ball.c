@@ -14,7 +14,7 @@ typedef struct tagva6UNIT_BALL
 
 static VOID VA6_UnitInit( va6UNIT_BALL *Uni, va6ANIM *Ani )
 {
-  VA6_RndPrimCreateSphere(&Uni->Ball, 0.5, 30, 12);
+  VA6_RndPrimCreateSphere(&Uni->Ball, 0.1, 30, 12);
   Uni->Pos = VecSet(Rnd1() * 4, 1, Rnd1() * 4);
 }
 

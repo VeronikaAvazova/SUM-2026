@@ -23,12 +23,12 @@ static VOID VA6_UnitClose( va6UNIT_COW *Uni, va6ANIM *Ani )
 
 static VOID VA6_UnitRender( va6UNIT_COW *Uni, va6ANIM *Ani )
 {
-  INT s = 0, i, j;
+  INT s = 2, i, j;
 
   for (i = -s; i <= s; i++)  
     for (j = -s; j <= s; j++)
       VA6_RndPrimDraw(&Uni->Cow, 
-        MatrMulMatr5(MatrScale(VecSet1(0.1)),
+        MatrMulMatr5(MatrScale(VecSet1(0.03)),
         MatrRotateY(Ani->Time * 180),
         MatrRotateX(sin(Ani->Time) * 30), 
         MatrRotateZ(sin(Ani->Time) * 30),

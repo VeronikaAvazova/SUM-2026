@@ -7,7 +7,7 @@
 #define GLEW_STATIC
 #include "glew.h"
 
-#include "def.h"
+#include "res/rndres.h"
 
 extern HWND VA6_hRndWnd;        /* Work window handle */
 extern HDC VA6_hRndDC;     /* Work window memory device context  */

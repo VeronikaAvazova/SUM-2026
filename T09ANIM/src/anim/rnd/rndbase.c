@@ -88,12 +88,12 @@ VOID VA6_RndInit( HWND hWnd )
   VA6_RndResize(47, 47);
   VA6_RndCamSet(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
 
- /* VA6_RndResInit();*/
+  VA6_RndResInit();
 }
 
 VOID VA6_RndClose( VOID )
 {
-  /* VA6_RndResClose();  */
+  VA6_RndResClose();
 
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(VA6_hRndGLRC);
@@ -121,6 +121,8 @@ VOID VA6_RndStart( VOID )
 {
   VEC4 ClearColor = {0.30, 0.47, 0.8, 1};
   FLT DepthClearValue = 1;
+
+  VA6_RndShdUpdate();
 
   /* Clear frame */
   glClearBufferfv(GL_COLOR, 0, &ClearColor.X);
