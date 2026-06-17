@@ -24,6 +24,18 @@ extern MATR
   VA6_RndMatrProj, /* Projection coordinate system matrix */
   VA6_RndMatrVP;   /* Stored (View * Proj) matrix */
 
+VOID VA6_RndInit( HWND hWnd );
+VOID VA6_RndClose( VOID );
+VOID VA6_RndResize( INT W, INT H );
+VOID VA6_RndCopyFrame( VOID );
+VOID VA6_RndStart( VOID );
+VOID VA6_RndEnd( VOID );
+VOID VA6_RndProjSet( VOID );
+VOID VA6_RndCamSet( VEC Loc, VEC At, VEC Up );
+
+
+extern VEC VA6_RndCamLoc, VA6_RndCamAt, VA6_RndCamRight, VA6_RndCamUp, VA6_RndCamDir; 
+
 typedef struct tagva6VERTEX
  {
   VEC P;   /* ïîçèöèÿ */
@@ -55,7 +67,13 @@ typedef struct tagva6PRIM
   VEC MinBB, MaxBB;  /* Bound box */
  
   MATR Trans;   /* Additional transformation matrix */
+  INT MtlNo; /* Material number at stock array */
 } va6PRIM;
+
+
+VOID APIENTRY glDebugOutput( UINT Source, UINT Type, UINT Id, UINT Severity,
+                             INT Length, const CHAR *Message,
+                             const VOID *UserParam );
  
 
 VOID VA6_RndPrimCreate( va6PRIM *Pr, va6PRIM_TYPE Type,
@@ -68,13 +86,3 @@ BOOL VA6_RndPrimCreateÑylinder( va6PRIM *Pr, DBL R, INT W, INT H );
 /* BOOL VA6_RndPrimCreateThor( va6PRIM *Pr, DBL R, INT W, INT H ); */
 BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName );
 VOID VA6_RndPrimTriMeshAutoNormals( va6VERTEX *V, INT NumOfV, INT *Ind, INT NumOfI);
-
-
-VOID VA6_RndInit( HWND hWnd );
-VOID VA6_RndClose( VOID );
-VOID VA6_RndResize( INT W, INT H );
-VOID VA6_RndCopyFrame( VOID );
-VOID VA6_RndStart( VOID );
-VOID VA6_RndEnd( VOID );
-VOID VA6_RndProjSet( VOID );
-VOID VA6_RndCamSet( VEC Loc, VEC At, VEC Up );

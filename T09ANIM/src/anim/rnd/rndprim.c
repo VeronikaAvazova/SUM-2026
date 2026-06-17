@@ -195,6 +195,7 @@ BOOL VA6_RndPrimCreateSphere( va6PRIM *Pr, DBL R, INT W, INT H )
       Ind[k++] = (i + 1) * W + j + 1;
     }
   VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, W * H, Ind, (H - 1) * (W - 1) * 2 * 3);
+  free(V);
   return TRUE;
 } /* End of 'VA6_RndPrimCreateSphere' function */
 
@@ -338,5 +339,6 @@ BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName )
     V[i].C = Vec4SetVec3(VecMulNum(VecSet(0.8, 0.30, 0.47), nl * 1.30));
   }
   VA6_RndPrimCreate(Pr, VA6_RND_PRIM_TRIMESH, V, nv, Ind, nf);
+  free(V);
   return TRUE;
 } /* End of 'VA6_RndPrimLoad' function */

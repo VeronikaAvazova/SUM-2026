@@ -7,15 +7,6 @@
 #include <time.h>
 #include "anim/rnd/rnd.h"
  
-/***
- * Shaders support
- ***/
-
-
-/* Array of shaders */
-va6SHADER VA6_RndShaders[VA6_MAX_SHADERS];
-/* Shadres array store size */
-INT VA6_RndShadersSize;
  
 /***
  * Base shaders functions

@@ -75,13 +75,26 @@ VOID VA6_RndInit( HWND hWnd )
     wglMakeCurrent(VA6_hRndDC, VA6_hRndGLRC);
   }
 
-    /* Render parameters setup */
+#ifndef NDEBUG
+  OutputDebugString(glGetString(GL_VERSION));
+  OutputDebugString("\n");
+  OutputDebugString(glGetString(GL_VENDOR));
+  OutputDebugString("\n");
+  OutputDebugString(glGetString(GL_RENDERER));
+  OutputDebugString("\n");
+
+  glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+  glDebugMessageCallback(glDebugOutput, NULL);
+#endif /* NDEBUG */
+
+  /* Render parameters setup */
   glEnable(GL_DEPTH_TEST);
   wglSwapIntervalEXT(0);
  
   VA6_RndProjSize = 0.1;
   VA6_RndProjDist = VA6_RndProjSize;
-  VA6_RndProjFarClip = 300;
+  VA6_RndProjFarClip = 3000;
   VA6_RndFrameW = 47;
   VA6_RndFrameH = 47;
 
