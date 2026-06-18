@@ -9,19 +9,19 @@ typedef struct tagva6UNIT_COW
 {
   VA6_UNIT_BASE_FIELDS;
   va6PRIM Cow;
-} va6UNIT_COW;
+} va6UNIT_LAND;
 
-static VOID VA6_UnitInit( va6UNIT_COW *Uni, va6ANIM *Ani )
+static VOID VA6_UnitInit( va6UNIT_LAND *Uni, va6ANIM *Ani )
 {
   VA6_RndPrimLoad(&Uni->Cow, "bin/models/cow.obj");
 }
 
-static VOID VA6_UnitClose( va6UNIT_COW *Uni, va6ANIM *Ani )
+static VOID VA6_UnitClose( va6UNIT_LAND *Uni, va6ANIM *Ani )
 {
   VA6_RndPrimFree(&Uni->Cow); 
 }
 
-static VOID VA6_UnitRender( va6UNIT_COW *Uni, va6ANIM *Ani )
+static VOID VA6_UnitRender( va6UNIT_LAND *Uni, va6ANIM *Ani )
 {
   INT s = 2, i, j;
 
@@ -39,7 +39,7 @@ va6UNIT * VA6_AnimUnitCreateCow( VOID )
 {
   va6UNIT *Uni;
  
-  if ((Uni = VA6_AnimUnitCreate(sizeof(va6UNIT_COW))) == NULL)
+  if ((Uni = VA6_AnimUnitCreate(sizeof(va6UNIT_LAND))) == NULL)
     return NULL;
 
   Uni->Init = (VOID *)VA6_UnitInit;

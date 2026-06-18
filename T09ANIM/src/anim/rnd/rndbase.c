@@ -166,5 +166,17 @@ VOID VA6_RndProjSet( VOID )
 VOID VA6_RndCamSet( VEC Loc, VEC At, VEC Up )
 {
   VA6_RndMatrView = MatrView(Loc, At, Up);
+   
+  VA6_RndCamRight = VecSet(VA6_RndMatrView.A[0][0],
+                           VA6_RndMatrView.A[1][0],
+                           VA6_RndMatrView.A[2][0]);
+  VA6_RndCamUp = VecSet(VA6_RndMatrView.A[0][1],
+                        VA6_RndMatrView.A[1][1],
+                        VA6_RndMatrView.A[2][1]);
+  VA6_RndCamDir = VecSet(-VA6_RndMatrView.A[0][2],
+                         -VA6_RndMatrView.A[1][2],
+                         -VA6_RndMatrView.A[2][2]);
+  VA6_RndCamLoc = Loc;
+  VA6_RndCamAt = At;
   VA6_RndMatrVP = MatrMulMatr(VA6_RndMatrView, VA6_RndMatrProj);
 }

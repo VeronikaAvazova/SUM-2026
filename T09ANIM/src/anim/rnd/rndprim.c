@@ -108,21 +108,35 @@ VOID VA6_RndPrimFree( va6PRIM *Pr )
  */
 VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World )
 {
-  MATR wvp = MatrMulMatr(World, MatrMulMatr(VA6_RndMatrView, VA6_RndMatrProj));
-  UINT ProgId = VA6_RndShaders[0].ProgId;
+  MATR
+    w = MatrMulMatr(Pr->Trans, World),
+    winv = MatrTranspose(MatrInverse(w)),
+    wvp = MatrMulMatr(w, VA6_RndMatrVP);
+  UINT ProgId;
   INT loc,
     prim_type =
       Pr->Type == VA6_RND_PRIM_LINES ? GL_LINES :
       Pr->Type == VA6_RND_PRIM_TRIMESH ? GL_TRIANGLES :
+      Pr->Type == VA6_RND_PRIM_TRISTRIP ? GL_TRIANGLE_STRIP :
       GL_POINTS;
  
+
   /*glLoadMatrixf(wvp.A[0]);*/
 
+  if ((ProgId = VA6_RndMtlApply(Pr->MtlNo)) == 0)
+    return;
   glUseProgram(ProgId);
+  /* Pass render uniforms */
   if ((loc = glGetUniformLocation(ProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
+  if ((loc = glGetUniformLocation(ProgId, "MatrW")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, w.A[0]);
+  if ((loc = glGetUniformLocation(ProgId, "MatrWInv")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, winv.A[0]);
   if ((loc = glGetUniformLocation(ProgId, "Time")) != -1)
     glUniform1f(loc, VA6_Anim.Time);
+  if ((loc = glGetUniformLocation(ProgId, "GlobalTime")) != -1)
+    glUniform1f(loc, VA6_Anim.GlobalTime);
 
   glBindVertexArray(Pr->VA);
   if (Pr->IBuf == 0)

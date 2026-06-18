@@ -93,6 +93,20 @@ __inline MATR MatrTranslate( VEC D )
   return r;
 }
 
+__inline MATR MatrTranspose( MATR m )
+{
+  MATR r =
+  {
+    {
+      {m.A[0][0], m.A[1][0], m.A[2][0], m.A[3][0]},
+      {m.A[0][1], m.A[1][1], m.A[2][1], m.A[3][1]},
+      {m.A[0][2], m.A[1][2], m.A[2][2], m.A[3][2]},
+      {m.A[0][3], m.A[1][3], m.A[2][3], m.A[3][3]},
+    }
+  };  
+  return r;
+}
+
 __inline MATR MatrScale( VEC S )
 {
   MATR r =

@@ -50,6 +50,7 @@ typedef enum tagva6PRIM_TYPE
   VA6_RND_PRIM_POINTS,   /* Array of points  ñ GL_POINTS */
   VA6_RND_PRIM_LINES,    /* Line segments (by 2 points) ñ GL_LINES */
   VA6_RND_PRIM_TRIMESH,  /* Triangle mesh - array of triangles ñ GL_TRIANGLES */
+  VA6_RND_PRIM_TRISTRIP,
 } va6PRIM_TYPE;
 
 /* Primitive representation type */
@@ -68,7 +69,15 @@ typedef struct tagva6PRIM
  
   MATR Trans;   /* Additional transformation matrix */
   INT MtlNo; /* Material number at stock array */
+  INT ShdNo;
 } va6PRIM;
+
+/* Grid topology representation type */
+typedef struct tagva6GRID
+{
+  INT W, H;      /* Grid size (in vertices) */
+  va6VERTEX *V;  /* Array (2D) of vertex */
+} va6GRID;
 
 
 VOID APIENTRY glDebugOutput( UINT Source, UINT Type, UINT Id, UINT Severity,
@@ -86,3 +95,10 @@ BOOL VA6_RndPrimCreate—ylinder( va6PRIM *Pr, DBL R, INT W, INT H );
 /* BOOL VA6_RndPrimCreateThor( va6PRIM *Pr, DBL R, INT W, INT H ); */
 BOOL VA6_RndPrimLoad( va6PRIM *Pr, CHAR *FileName );
 VOID VA6_RndPrimTriMeshAutoNormals( va6VERTEX *V, INT NumOfV, INT *Ind, INT NumOfI);
+
+
+BOOL VA6_RndGridCreate( va6GRID *G, INT W, INT H );
+VOID VA6_RndGridFree( va6GRID *G ); 
+VOID VA6_RndPrimFromGrid( va6PRIM *Pr, va6GRID *G );
+VOID VA6_RndGridAutoNormals( va6GRID *G );
+BOOL VA6_RndGridCreateSphere( va6GRID *G, FLT R, INT W, INT H );

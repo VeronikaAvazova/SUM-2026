@@ -7,4 +7,5 @@
 
 va6UNIT * VA6_AnimUnitCreateBall( VOID );  
 va6UNIT * VA6_AnimUnitCreateCow( VOID );
-va6UNIT * VA6_UnitCreateControl( VOID );
+va6UNIT * VA6_UnitCreateControl( VOID ); 
+va6UNIT * VA6_AnimUnitCreateLand( VOID );

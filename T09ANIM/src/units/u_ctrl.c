@@ -17,7 +17,7 @@ static VOID VA6_UnitInit( va6UNIT_CONTROL *Uni, va6ANIM *Ani )
 {
   Uni->CamLoc = VecSet(8, 8, 8);
   Uni->CamAt = VecSet(0, 0, 0);
-  Uni->Speed = 5;
+  Uni->Speed = 100;
 }
 
 static VOID VA6_UnitClose( va6UNIT_CONTROL *Uni, va6ANIM *Ani )
