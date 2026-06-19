@@ -5,7 +5,7 @@
  */
 
 #define GLEW_STATIC
-#include "glew.h"
+#include "opengl/glew.h"
 
 #include "res/rndres.h"
 

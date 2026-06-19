@@ -67,8 +67,8 @@ UINT VA6_RndMtlApply( INT MtlNo )
   else
     prg = VA6_RndShaders[prg].ProgId;
  
-  /*if (prg == 0)
-    return 0;*/
+  if (prg == 0)
+    return 0;
  
   glUseProgram(prg);
  
@@ -88,9 +88,15 @@ UINT VA6_RndMtlApply( INT MtlNo )
   for (i = 0; i < 8; i++)
   {
     CHAR tname[] = "IsTexture0";
+    CHAR tnamew[] = "Texture0W";
+    CHAR tnameh[] = "Texture0H";
+	BOOL IsTex = FALSE;
 
     tname[9] = '0' + i;
-    if (mtl->Tex[i] != -1)
+	tnamew[7] = '0' + i;    
+	tnameh[7] = '0' + i;
+    
+	if (mtl->Tex[i] != -1 && mtl->Tex[i] >= 0 && mtl->Tex[i] < VA6_RndTexturesSize)
     {
       glActiveTexture(GL_TEXTURE0 + i);
       glBindTexture(GL_TEXTURE_2D, VA6_RndTextures[mtl->Tex[i]].TexId);

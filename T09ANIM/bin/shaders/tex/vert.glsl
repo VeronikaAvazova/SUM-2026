@@ -12,8 +12,8 @@ uniform float Time;
 out vec4 DrawColor;
 out vec3 DrawNormal;
 out vec3 DrawPos;
-out vec3 DrawPosOrg;   
-out vec2 DrawTexCoord; 
+out vec3 DrawPosOrg;
+out vec2 DrawTexCoord;
  
 void main( void )
 {

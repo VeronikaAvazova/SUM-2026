@@ -6,8 +6,8 @@
 #include <time.h>
 
 #include "rnd.h"
-#include "wglew.h"
-#include "gl/wglext.h"
+#include "opengl/wglew.h"
+#include "opengl/wglext.h"
 
 #include "gl/glu.h"
 
@@ -83,9 +83,9 @@ VOID VA6_RndInit( HWND hWnd )
   OutputDebugString(glGetString(GL_RENDERER));
   OutputDebugString("\n");
 
-  glEnable(GL_DEBUG_OUTPUT);
-  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  glDebugMessageCallback(glDebugOutput, NULL);
+  //glEnable(GL_DEBUG_OUTPUT);
+  //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+  //glDebugMessageCallback(glDebugOutput, NULL);
 #endif /* NDEBUG */
 
   /* Render parameters setup */
@@ -102,12 +102,15 @@ VOID VA6_RndInit( HWND hWnd )
   VA6_RndCamSet(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
 
   VA6_RndResInit();
+  VA6_RndShdInit();
+  VA6_RndMtlInit();
 }
 
 VOID VA6_RndClose( VOID )
 {
   VA6_RndResClose();
-
+  VA6_RndMtlClose();
+  VA6_RndShdClose();
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(VA6_hRndGLRC);
   ReleaseDC(VA6_hRndWnd, VA6_hRndDC);

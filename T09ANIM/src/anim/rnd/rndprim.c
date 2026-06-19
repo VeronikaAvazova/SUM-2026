@@ -137,6 +137,8 @@ VOID VA6_RndPrimDraw( va6PRIM *Pr, MATR World )
     glUniform1f(loc, VA6_Anim.Time);
   if ((loc = glGetUniformLocation(ProgId, "GlobalTime")) != -1)
     glUniform1f(loc, VA6_Anim.GlobalTime);
+  if ((loc = glGetUniformLocation(ProgId, "CamLoc")) != -1)
+    glUniform3fv(loc, 1, &VA6_RndCamLoc.X);
 
   glBindVertexArray(Pr->VA);
   if (Pr->IBuf == 0)
